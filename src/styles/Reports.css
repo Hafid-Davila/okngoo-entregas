@@ -1,0 +1,115 @@
+.reports-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .subtitle {
+    font-family: "Fascinate Inline", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 26px;
+    color: #333;
+    text-shadow: 2px 2px 4px #6EC5C3;
+    margin-bottom: 35px;
+    margin-top: 0px;
+  }
+  
+
+  
+  .reports-container button {
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .reports-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .back-button-container {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #555;
+  }
+  
+  .reports-container, .report-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+  }
+  
+  
+  
+  .reports-container button, .report-form-container button {
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .reports-container button:hover, .report-form-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  .delivery-list {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+  }
+  
+  .delivery-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  
+  .back-button-container {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #555;
+  }
+  

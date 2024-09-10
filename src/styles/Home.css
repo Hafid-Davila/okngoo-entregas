@@ -1,0 +1,90 @@
+/* Estilos generales */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.logo {
+  width: 250px;
+  height: auto;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-family: "Fascinate Inline", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 26px;
+  color: #333;
+  text-shadow: 2px 2px 4px #6EC5C3;
+  margin-bottom: 35px;
+  margin-top: 0px;
+  text-align: center;  /* Centramos el título para pantallas pequeñas */
+}
+
+.button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  background: #007BFF;
+  cursor: pointer;
+  width: 200px;
+  text-align: center;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+button:active {
+  background-color: #5cc5c2;
+}
+
+/* Media Query para iPhone estándar (360px a 768px) */
+@media only screen and (max-width: 768px) {
+  .container {
+    padding: 15px;
+    height: auto; /* Ajustamos la altura para pantallas más pequeñas */
+  }
+
+  .logo {
+    width: 180px; /* Hacemos el logo más pequeño para que se ajuste */
+    margin-bottom: 20px;
+  }
+
+  .title {
+    font-size: 22px; /* Reducimos el tamaño de la fuente para pantallas más pequeñas */
+    margin-bottom: 20px;
+  }
+
+  .button {
+    width: 160px; /* Hacemos los botones más pequeños */
+    font-size: 14px; /* Reducimos el tamaño de la fuente */
+    padding: 8px 16px; /* Ajustamos el padding del botón */
+  }
+}
+
+/* Media Query para pantallas muy pequeñas (iPhone SE, 320px de ancho) */
+@media only screen and (max-width: 360px) {
+  .container {
+    padding: 10px;
+  }
+
+  .logo {
+    width: 150px; /* Aún más pequeño para pantallas muy pequeñas */
+  }
+
+  .title {
+    font-size: 20px; /* Ajustamos aún más el tamaño del texto */
+  }
+
+  .button {
+    width: 140px; /* Hacemos los botones más pequeños para pantallas pequeñas */
+    font-size: 12px; /* Ajustamos el tamaño de la fuente del botón */
+  }
+}
