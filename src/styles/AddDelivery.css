@@ -1,9 +1,17 @@
 /* Estilos generales */
+
+/* Fondo de pantalla del componente */
+
+
 .delivery-form-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
   padding: 20px;
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera para resaltar */
+  max-width: 500px; /* Ajuste de ancho máximo */
+  width: 100%; /* Ocupar todo el ancho disponible */
+  margin: 20px auto; /* Centrar el formulario */
+  box-sizing: border-box; /* Incluir el padding dentro del ancho total */
 }
 
 .subtitle {
@@ -145,6 +153,12 @@ button:hover {
 
 /* Tabletas como el iPad (768px de ancho) */
 @media only screen and (max-width: 768px) {
+
+  .delivery-form-container {
+    max-width: 100%; /* Ocupar todo el ancho de la pantalla en móviles */
+    margin: 10px; /* Agregar algo de margen para evitar tocar los bordes */
+  }
+
   .subtitle {
     font-size: 26px; /* Tamaño de subtítulo estándar */
   }

@@ -261,4 +261,3 @@ const DeliveryList = () => {
 };
 
 export default DeliveryList;
-

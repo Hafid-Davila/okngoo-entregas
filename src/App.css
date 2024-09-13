@@ -1,38 +1,11 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Fondo de pantalla del componente */
+body {
+  background: url('/public/images/Black\ &\ White\ City\ Skyscraper\ Desktop\ Wallpaper.png') center center / cover no-repeat;
+  background-size: cover;
+  min-height: 100vh; /* Aseguramos que ocupe al menos el 100% de la altura de la pantalla */
+  margin: 0;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: flex-start; /* Alineación al inicio para evitar que el contenido se desborde */
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  padding: 20px; /* Añadimos padding para evitar que el contenido toque los bordes */
 }

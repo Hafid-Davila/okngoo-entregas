@@ -1,0 +1,111 @@
+.report-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Centrar verticalmente */
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera para resaltar */
+    max-width: 800px; /* Limitar el ancho máximo */
+    width: 100%; /* Ocupar todo el ancho disponible */
+    margin: auto; /* Centrar horizontalmente */
+    box-sizing: border-box; /* Incluir padding en el ancho */
+    min-height: 80vh; /* Asegurar que el contenedor tenga suficiente altura */
+  }
+  
+  /* Estilo para el subtítulo */
+  .subtitle {
+    font-family: "Fascinate Inline", system-ui;
+    font-weight: 400;
+    font-size: 26px;
+    color: #333;
+    text-shadow: 2px 2px 4px #6EC5C3;
+    margin-bottom: 35px;
+    margin-top: 0px;
+  }
+  
+  /* Contenedor de cada campo */
+  .report-form-container div {
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  label {
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  
+  select, input[type="date"] {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+  }
+  
+  /* Estilos para la lista de entregas */
+  .delivery-list {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 20px;
+  }
+  
+  .delivery-item {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+  }
+  
+  .delivery-item button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #007BFF;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .delivery-item button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Estilos para los botones de navegación */
+  .back-button-container {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #333;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+  }
+  
+  .back-button:hover {
+    background-color: #555;
+  }
+  
+  /* Responsividad para pantallas pequeñas */
+  @media only screen and (max-width: 768px) {
+    .report-form-container {
+      max-width: 100%; /* Asegurarse de que el contenedor ocupe el ancho completo */
+      margin: 10px; /* Espacio para evitar que toque los bordes */
+    }
+  }
+  

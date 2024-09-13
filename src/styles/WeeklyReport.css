@@ -2,7 +2,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center; /* Centrar verticalmente el contenido */
   padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente */
+  border-radius: 10px; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera para resaltar */
+  max-width: 800px; /* Limitar el ancho máximo */
+  width: 100%; /* Ocupar todo el ancho disponible */
+  margin: auto; /* Centrar el contenedor tanto horizontal como verticalmente */
+  margin-top: 100px; /* Añadir margen superior */
+  box-sizing: border-box; /* Asegurar que el padding no cause desbordamiento */
 }
 
 .subtitle {

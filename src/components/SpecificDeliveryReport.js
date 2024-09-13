@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';  // Importar autotable
+import '../styles/SpecificDeliveryReport.css';
 
 const SpecificDeliveryReport = () => {
   const [client, setClient] = useState('');
