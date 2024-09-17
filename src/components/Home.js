@@ -14,7 +14,7 @@ const Home = () => {
       <div className="content-overlay">
         <img src="/images/okngoo logo main.png" alt="logo" className="logo" />
       
-        <h1 className="title">Bienvenido a Okngoo Delivery</h1>
+        <h1 className="subtitle">Bienvenido a Okngoo Delivery</h1>
 
         <button className="button" onClick={() => navigate('/add-delivery')}>
           Registrar entrega
