@@ -209,7 +209,7 @@ const AddDelivery = () => {
           />
         </div>
         <div>
-          <label htmlFor="date">Fecha de salida:</label>
+          <label htmlFor="date">Fecha de Registro:</label>
           <input
             id="date"
             type="date"

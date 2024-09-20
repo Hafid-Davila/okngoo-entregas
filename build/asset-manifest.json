@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/static/css/main.319707df.css",
-    "main.js": "/static/js/main.198cd575.js",
+    "main.css": "/static/css/main.64848d6d.css",
+    "main.js": "/static/js/main.8f67dba1.js",
     "static/js/239.77adaa2d.chunk.js": "/static/js/239.77adaa2d.chunk.js",
     "static/js/213.3710bfcf.chunk.js": "/static/js/213.3710bfcf.chunk.js",
     "static/js/732.91539038.chunk.js": "/static/js/732.91539038.chunk.js",
     "static/js/453.46faac47.chunk.js": "/static/js/453.46faac47.chunk.js",
     "static/media/Black & White City Skyscraper Desktop Wallpaper.png": "/static/media/Black & White City Skyscraper Desktop Wallpaper.fa1a5ce9502073262bc1.png",
     "index.html": "/index.html",
-    "main.319707df.css.map": "/static/css/main.319707df.css.map",
-    "main.198cd575.js.map": "/static/js/main.198cd575.js.map",
+    "main.64848d6d.css.map": "/static/css/main.64848d6d.css.map",
+    "main.8f67dba1.js.map": "/static/js/main.8f67dba1.js.map",
     "239.77adaa2d.chunk.js.map": "/static/js/239.77adaa2d.chunk.js.map",
     "213.3710bfcf.chunk.js.map": "/static/js/213.3710bfcf.chunk.js.map",
     "732.91539038.chunk.js.map": "/static/js/732.91539038.chunk.js.map",
     "453.46faac47.chunk.js.map": "/static/js/453.46faac47.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.319707df.css",
-    "static/js/main.198cd575.js"
+    "static/css/main.64848d6d.css",
+    "static/js/main.8f67dba1.js"
   ]
 }

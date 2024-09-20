@@ -79,6 +79,7 @@ const DeliveryList = () => {
         <strong>Estado:</strong> ${delivery.status} <br/>
         <strong>Fecha de Registro:</strong> ${delivery.date} <br/>
         <strong>Fecha de Entrega:</strong> ${delivery.deliveryDate || 'Pendiente'} <br/>
+        <strong>Hora de Entrega:</strong> ${delivery.deliveryTime || 'Pendiente'} <br/>
         <strong>Método de Pago:</strong> ${delivery.paymentMethod || 'No especificado'} <br/>
       `,
       icon: 'info',
@@ -86,72 +87,61 @@ const DeliveryList = () => {
     });
   };
 
-  const handleActionChange = async (id, action) => {
-    if (action === 'delete') {
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: "No podrás revertir esta acción.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, borrar',
-        cancelButtonText: 'Cancelar'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          await deleteDoc(doc(db, "deliveries", id));
-          setDeliveries(deliveries.filter(delivery => delivery.id !== id));
-          setFilteredDeliveries(filteredDeliveries.filter(delivery => delivery.id !== id));
+ const handleActionChange = async (id, action) => {
+  if (action === 'delete') {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "No podrás revertir esta acción.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, borrar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteDoc(doc(db, "deliveries", id));
+        setDeliveries(deliveries.filter(delivery => delivery.id !== id));
+        setFilteredDeliveries(filteredDeliveries.filter(delivery => delivery.id !== id));
 
-          Swal.fire(
-            '¡Borrado!',
-            'La entrega ha sido borrada.',
-            'success'
-          );
-        }
-      });
-    } else if (action === 'Entregado') {
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: "El estado será cambiado a 'Entregado'.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, cambiar',
-        cancelButtonText: 'Cancelar'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const currentDate = new Date().toISOString().split('T')[0]; // Obtener la fecha actual
-          const deliveryDoc = doc(db, "deliveries", id);
+        Swal.fire(
+          '¡Borrado!',
+          'La entrega ha sido borrada.',
+          'success'
+        );
+      }
+    });
+  } else if (action === 'Entregado') {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "El estado será cambiado a 'Entregado'.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cambiar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const currentDate = new Date();
+        // Ajustar la fecha al inicio del día en UTC
+        const deliveryDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()));
 
-          // Actualizar estado a "Entregado" y agregar la fecha de entrega
-          await updateDoc(deliveryDoc, { status: action, deliveryDate: currentDate });
-
-          setDeliveries(deliveries.map(delivery =>
-            delivery.id === id ? { ...delivery, status: action, deliveryDate: currentDate } : delivery
-          ));
-          setFilteredDeliveries(filteredDeliveries.map(delivery =>
-            delivery.id === id ? { ...delivery, status: action, deliveryDate: currentDate } : delivery
-          ));
-
-          Swal.fire({
-            title: 'Estado actualizado',
-            text: `El estado ha sido cambiado a ${action}.`,
-            icon: 'success',
-            confirmButtonText: 'OK'
-          });
-        }
-      });
-    } else {
-      try {
         const deliveryDoc = doc(db, "deliveries", id);
-        await updateDoc(deliveryDoc, { status: action });
+
+        // Actualizar estado a "Entregado" y agregar la fecha de entrega
+        await updateDoc(deliveryDoc, { 
+          status: action, 
+          deliveryDate: deliveryDate.toISOString().split('T')[0], 
+          deliveryTime: currentDate.toTimeString().split(' ')[0] 
+        });
+        
+
         setDeliveries(deliveries.map(delivery =>
-          delivery.id === id ? { ...delivery, status: action } : delivery
+          delivery.id === id ? { ...delivery, status: action, deliveryDate: deliveryDate.toISOString().split('T')[0] } : delivery
         ));
         setFilteredDeliveries(filteredDeliveries.map(delivery =>
-          delivery.id === id ? { ...delivery, status: action } : delivery
+          delivery.id === id ? { ...delivery, status: action, deliveryDate: deliveryDate.toISOString().split('T')[0] } : delivery
         ));
 
         Swal.fire({
@@ -160,16 +150,36 @@ const DeliveryList = () => {
           icon: 'success',
           confirmButtonText: 'OK'
         });
-      } catch (error) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Hubo un error al actualizar el estado.',
-          icon: 'error',
-          confirmButtonText: 'OK'
-        });
       }
+    });
+  } else {
+    try {
+      const deliveryDoc = doc(db, "deliveries", id);
+      await updateDoc(deliveryDoc, { status: action });
+      setDeliveries(deliveries.map(delivery =>
+        delivery.id === id ? { ...delivery, status: action } : delivery
+      ));
+      setFilteredDeliveries(filteredDeliveries.map(delivery =>
+        delivery.id === id ? { ...delivery, status: action } : delivery
+      ));
+
+      Swal.fire({
+        title: 'Estado actualizado',
+        text: `El estado ha sido cambiado a ${action}.`,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Hubo un error al actualizar el estado.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
-  };
+  }
+};
+
 
   return (
     <div className="delivery-list-container">
@@ -206,6 +216,7 @@ const DeliveryList = () => {
             <th>Estado</th>
             <th>Fecha de Registro</th>
             <th>Fecha de Entrega</th>  {/* Nueva columna para la fecha de entrega */}
+            <th>Hora de Entrega</th> {/* Nueva columna para la hora de entrega */}
             <th>Método de Pago</th>
             <th>Acciones</th>
             <th>Info</th>
@@ -219,6 +230,7 @@ const DeliveryList = () => {
               <td data-label="Estado">{delivery.status}</td>
               <td data-label="Fecha de Registro">{delivery.date}</td>
               <td data-label="Fecha de Entrega">{delivery.deliveryDate || 'Pendiente'}</td>  {/* Mostrar la fecha de entrega */}
+              <td>{delivery.deliveryTime || 'Pendiente'}</td> {/* Mostrar la hora de entrega */}
               <td data-label="Método de Pago">
                 <select 
                   onChange={(e) => handlePaymentChange(delivery.id, e.target.value)} 
@@ -233,9 +245,10 @@ const DeliveryList = () => {
               <td data-label="Acciones">
                 <select onChange={(e) => handleActionChange(delivery.id, e.target.value)} value={delivery.status}>
                   <option value="" disabled>Seleccione una acción</option>
-                  <option value="Entregado">Marcar como Entregado</option>
-                  <option value="Cancelado">Marcar como Cancelado</option>
-                  <option value="Pendiente">Marcar como Pendiente</option>
+                  <option value="En Ruta">En Ruta</option>
+                  <option value="Entregado">Entregado</option>
+                  <option value="Cancelado">Cancelado</option>
+                  <option value="Pendiente">Pendiente</option>
                   <option value="delete">Borrar</option>
                 </select>
               </td>

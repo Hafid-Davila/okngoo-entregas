@@ -10,13 +10,13 @@ import { Link } from 'react-router-dom';
 
 const DailyReport = () => {
   const [deliveries, setDeliveries] = useState([]);
-  const [date, setDate] = useState(''); // Se utiliza para filtrar por fecha de registro
+  const [date, setDate] = useState(''); // Se utiliza para filtrar por fecha de entrega
 
   useEffect(() => {
     if (date) {
       const fetchDeliveries = async () => {
-        // Filtrar por la fecha de registro "date"
-        const q = query(collection(db, "deliveries"), where("date", "==", date)); 
+        // Filtrar por la fecha de entrega "deliveryDate"
+        const q = query(collection(db, "deliveries"), where("deliveryDate", "==", date)); 
         const querySnapshot = await getDocs(q);
         const deliveriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setDeliveries(deliveriesData);
@@ -30,16 +30,18 @@ const DailyReport = () => {
     Swal.fire({
       title: `Información de Entrega`,
       html: `
-        <strong>Cliente:</strong> ${delivery.client} <br/>
+         <strong>Receptor:</strong> ${delivery.receiver} <br/>
         <strong>Producto:</strong> ${delivery.product} <br/>
         <strong>Cantidad:</strong> ${delivery.quantity} <br/>
         <strong>Total:</strong> ${delivery.total} <br/>
+        <strong>Método de pago:</strong> ${delivery.paymentMethod}<br/>
         <strong>Dirección:</strong> ${delivery.address} <br/>
+        <strong>Fuera de Cobertura:</strong> ${delivery.outOfCoverage}<br/>
         <strong>Teléfono:</strong> ${delivery.phone} <br/>
-        <strong>Receptor:</strong> ${delivery.receiver} <br/>
         <strong>Estado:</strong> ${delivery.status} <br/>
         <strong>Fecha de Registro:</strong> ${delivery.date} <br/>
-        <strong>Fecha de Entrega:</strong> ${delivery.deliveryDate || 'Sin especificar'} <br/>  <!-- Mostrar deliveryDate si está disponible -->
+        <strong>Fecha de Entrega:</strong> ${delivery.deliveryDate || 'Sin especificar'} <br/>
+        <strong>Hora de Entrega:</strong> ${delivery.deliveryTime || 'Pendiente'} <br/>
       `,
       icon: 'info',
       confirmButtonText: 'Cerrar',
@@ -67,32 +69,41 @@ const DailyReport = () => {
     doc.addImage(logoBase64, 'PNG', 14, 10, 50, 15);  // (imgData, format, x, y, width, height)
 
     const tableColumn = [
-      "Cliente",
+      "Receptor",
       "Producto",
       "Cantidad",
       "Total",
+      "Método de Pago",
       "Dirección",
-      "Teléfono",
-      "Receptor",
+      "Fuera de Cobertura",
       "Estado",
-      "Fecha de Entrega"  // Solo se mostrará la fecha de entrega en el PDF
+      "Fecha de Registro",  // Índice 8
+      "Fecha de Entrega"
     ];
 
-    const tableRows = [];
+    let tableRows = [];
 
     deliveries.forEach(delivery => {
       const rowData = [
-        delivery.client,
+        delivery.receiver,
         delivery.product,
         delivery.quantity,
         delivery.total,
+        delivery.paymentMethod,
         delivery.address,
-        delivery.phone,
-        delivery.receiver,
+        delivery.outOfCoverage,
         delivery.status,
-        delivery.deliveryDate || 'Sin especificar'  // Usar deliveryDate o mostrar "Sin especificar" si no está disponible
+        delivery.date,  // Fecha de Registro
+        delivery.deliveryDate || 'Sin especificar'  // Fecha de Entrega
       ];
       tableRows.push(rowData);
+    });
+
+    // Ordenar las filas por la columna "Fecha de Registro"
+    tableRows.sort((a, b) => {
+      const dateA = new Date(a[8]);  // Índice 8 corresponde a "Fecha de Registro"
+      const dateB = new Date(b[8]);
+      return dateA - dateB;
     });
 
     // Añadir encabezado debajo del logo
@@ -103,17 +114,21 @@ const DailyReport = () => {
       head: [tableColumn],
       body: tableRows,
       startY: 45,
+      styles: {
+        fontSize: 8,  // Cambia el tamaño del texto (puedes ajustar el valor según necesites)
+      },
     });
 
     // Descargar el PDF
     doc.save(`Reporte_Entregas_${date}.pdf`);
-  };
+};
+
 
   return (
     <div className="daily-report-container">
       <h2 className='subtitle'>Reporte de Entregas del Día</h2>
       <div>
-        <label htmlFor="date">Seleccione la Fecha de Registro:</label> {/* Filtrado por fecha de registro */}
+        <label htmlFor="date">Seleccione la Fecha de Entrega:</label> {/* Filtrado por fecha de entrega */}
         <input 
           type="date" 
           id="date" 
