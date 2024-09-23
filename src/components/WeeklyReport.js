@@ -11,54 +11,66 @@ const WeeklyReport = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [totalSales, setTotalSales] = useState(0);
-  const [totalTransferSales, setTotalTransferSales] = useState(0); // Ventas por transferencia
-  const [totalCashSales, setTotalCashSales] = useState(0);         // Ventas en efectivo
-  const [totalDeliveryCost, setTotalDeliveryCost] = useState(0);   // Costo de entrega
+  const [totalTransferSales, setTotalTransferSales] = useState(0);
+  const [totalCashSales, setTotalCashSales] = useState(0);
+  const [totalDeliveryCost, setTotalDeliveryCost] = useState(0);
   const [totalDeliveries, setTotalDeliveries] = useState(0);
-  const [netTotal, setNetTotal] = useState(0);                     // Total neto
+  const [netTotal, setNetTotal] = useState(0);
 
   useEffect(() => {
     if (startDate && endDate) {
       const fetchWeeklyDeliveries = async () => {
-        const q = query(
-          collection(db, "deliveries"),
-          where("date", ">=", startDate),  // Usamos la fecha de registro para el filtro
-          where("date", "<=", endDate)
-        );
-        const querySnapshot = await getDocs(q);
-        const deliveriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        try {
+          const q = query(
+            collection(db, "deliveries"),
+            where("date", ">=", startDate),
+            where("date", "<=", endDate)
+          );
+          const querySnapshot = await getDocs(q);
+          const deliveriesData = querySnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(delivery => delivery.status === "Entregado")  // Filtrar por estado "Entregado"
+            .sort((a, b) => new Date(a.deliveryDate) - new Date(b.deliveryDate));  // Ordenar por fecha de entrega
 
-        // Calcular el total de ventas, ventas por transferencia, efectivo, entregas y el costo de entrega
-        let transferSales = 0;
-        let cashSales = 0;
+          let transferSales = 0;
+          let cashSales = 0;
 
-        const salesTotal = deliveriesData.reduce((acc, curr) => {
-          const parsedTotal = parseFloat(curr.total.replace(/[$,]/g, '')) || 0;
-          if (curr.paymentMethod === "Transferencia") {
-            transferSales += parsedTotal;
-          } else if (curr.paymentMethod === "Efectivo") {
-            cashSales += parsedTotal;
-          }
-          return acc + parsedTotal;
-        }, 0);
+          const salesTotal = deliveriesData.reduce((acc, curr) => {
+            const parsedTotal = parseFloat(curr.total.replace(/[$,]/g, '')) || 0;
+            if (curr.paymentMethod === "Transferencia") {
+              transferSales += parsedTotal;
+            } else if (curr.paymentMethod === "Efectivo") {
+              cashSales += parsedTotal;
+            }
+            return acc + parsedTotal;
+          }, 0);
 
-        const deliveryCount = deliveriesData.length;
+          const deliveryCount = deliveriesData.length;
 
-        const deliveryCostTotal = deliveriesData.reduce((acc, curr) => {
-          const deliveryCost = curr.outOfCoverage === "Sí" ? 100 : 65;
-          return acc + deliveryCost;
-        }, 0);
+          const deliveryCostTotal = deliveriesData.reduce((acc, curr) => {
+            const deliveryCost = curr.outOfCoverage === "Sí" ? 100 : 65;
+            return acc + deliveryCost;
+          }, 0);
 
-        const netTotalAmount = salesTotal - deliveryCostTotal;
+          const netTotalAmount = salesTotal - deliveryCostTotal;
 
-        setDeliveries(deliveriesData);
-        setTotalSales(salesTotal);
-        setTotalTransferSales(transferSales);
-        setTotalCashSales(cashSales);
-        setTotalDeliveryCost(deliveryCostTotal);
-        setTotalDeliveries(deliveryCount);
-        setNetTotal(netTotalAmount);
+          setDeliveries(deliveriesData);
+          setTotalSales(salesTotal);
+          setTotalTransferSales(transferSales);
+          setTotalCashSales(cashSales);
+          setTotalDeliveryCost(deliveryCostTotal);
+          setTotalDeliveries(deliveryCount);
+          setNetTotal(netTotalAmount);
+        } catch (error) {
+          console.error("Error fetching deliveries:", error);
+          alert("Hubo un error al obtener los datos.");
+        }
       };
+
+      if (new Date(startDate) > new Date(endDate)) {
+        alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
+        return;
+      }
 
       fetchWeeklyDeliveries();
     }
@@ -78,56 +90,35 @@ const WeeklyReport = () => {
   const exportToPDF = async () => {
     const doc = new jsPDF();
 
-    // Cargar el logo en formato base64
     const logoBase64 = await loadImageAsBase64("/images/okngoo logo main.png");
-
-    // Añadir el logo al PDF
-    doc.addImage(logoBase64, 'PNG', 14, 10, 50, 15);  // (imgData, format, x, y, width, height)
+    doc.addImage(logoBase64, 'PNG', 14, 10, 50, 15);
 
     const tableColumn = [
-      "Receptor",
-      "Producto",
-      "Precio",
-      "Cantidad",
-      "Cantidad por Cobrar",
-      "Fuera de Cobertura",
-      "Costo de Entrega",
-      "Monto después de Costo de Entrega",
-      "Fecha de Entrega",  // Usamos deliveryDate solo en el reporte PDF
-      "Estatus",
-      "Método de Pago"
+      "Receptor", "Producto", "Precio", "Cantidad", "Cantidad por Cobrar", 
+      "Fuera de Cobertura", "Costo de Entrega", "Monto después de Costo de Entrega", 
+      "Fecha de Entrega", "Estatus", "Método de Pago"
     ];
 
-    const tableRows = [];
+    const tableRows = deliveries.map(delivery => [
+      delivery.receiver, delivery.product, `$${delivery.price.toFixed(2)}`,
+      delivery.quantity, `$${delivery.total.replace(/[$,]/g, '')}`, delivery.outOfCoverage,
+      delivery.outOfCoverage === "Sí" ? "$100.00" : "$65.00",
+      `$${(parseFloat(delivery.total.replace(/[$,]/g, '')) - (delivery.outOfCoverage === "Sí" ? 100 : 65)).toFixed(2)}`,
+      delivery.deliveryDate || 'Sin especificar', delivery.status, delivery.paymentMethod || "No especificado"
+    ]);
 
-    deliveries.forEach(delivery => {
-      const rowData = [
-        delivery.receiver,
-        delivery.product,
-        `$${delivery.price.toFixed(2)}`,
-        delivery.quantity,
-        `$${delivery.total.replace(/[$,]/g, '')}`,
-        delivery.outOfCoverage,
-        delivery.outOfCoverage === "Sí" ? "$100.00" : "$65.00",
-        `$${(parseFloat(delivery.total.replace(/[$,]/g, '')) - (delivery.outOfCoverage === "Sí" ? 100 : 65)).toFixed(2)}`,
-        delivery.deliveryDate || 'Sin especificar',  // Mostramos deliveryDate en el PDF
-        delivery.status,
-        delivery.paymentMethod || "No especificado"
-      ];
-      tableRows.push(rowData);
-    });
-
-    // Añadir encabezado debajo del logo
     doc.text(`Reporte de Entregas Semanales: ${startDate} a ${endDate}`, 14, 35);
     
-    // Generar la tabla
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
       startY: 45,
+      styles: {
+        fontSize: 8,  // Cambia el tamaño del texto (puedes ajustar el valor según necesites)
+      },
     });
 
-    // Añadir totales al final del documento
+    // Agregar todos los montos visibles al PDF
     doc.text(`Total de Ventas: $${totalSales.toFixed(2)}`, 14, doc.autoTable.previous.finalY + 10);
     doc.text(`Ventas por Transferencia: $${totalTransferSales.toFixed(2)}`, 14, doc.autoTable.previous.finalY + 20);
     doc.text(`Ventas por Efectivo: $${totalCashSales.toFixed(2)}`, 14, doc.autoTable.previous.finalY + 30);
@@ -135,9 +126,17 @@ const WeeklyReport = () => {
     doc.text(`Total de Entregas: ${totalDeliveries}`, 14, doc.autoTable.previous.finalY + 50);
     doc.text(`Monto Total después de Costo de Entrega: $${netTotal.toFixed(2)}`, 14, doc.autoTable.previous.finalY + 60);
 
-    // Descargar el PDF
     doc.save(`Reporte_Entregas_Semana_${startDate}_a_${endDate}.pdf`);
   };
+
+  useEffect(() => {
+    const today = new Date();
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    
+    setStartDate(lastWeek.toISOString().split('T')[0]);
+    setEndDate(today.toISOString().split('T')[0]);
+  }, []);
 
   return (
     <div className="weekly-report-container">
@@ -163,7 +162,7 @@ const WeeklyReport = () => {
       </div>
 
       <button onClick={exportToPDF} disabled={deliveries.length === 0}>
-        Descargar Reporte en PDF
+        {deliveries.length === 0 ? "No hay datos para exportar" : "Descargar Reporte en PDF"}
       </button>
 
       <div className="back-button-container">

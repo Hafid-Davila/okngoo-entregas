@@ -16,12 +16,21 @@ const DeliveryList = () => {
     const fetchDeliveries = async () => {
       const querySnapshot = await getDocs(collection(db, "deliveries"));
       const deliveriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setDeliveries(deliveriesData);
-      setFilteredDeliveries(deliveriesData);
+      
+      // Ordenar las entregas por la fecha de registro
+      const sortedDeliveries = deliveriesData.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateA - dateB; // Orden ascendente
+      });
+  
+      setDeliveries(sortedDeliveries);
+      setFilteredDeliveries(sortedDeliveries);
     };
-
+  
     fetchDeliveries();
   }, []);
+  
 
   // Filtrar entregas por rango de fechas de registro
   useEffect(() => {
@@ -87,99 +96,100 @@ const DeliveryList = () => {
     });
   };
 
- const handleActionChange = async (id, action) => {
-  if (action === 'delete') {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "No podrás revertir esta acción.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await deleteDoc(doc(db, "deliveries", id));
-        setDeliveries(deliveries.filter(delivery => delivery.id !== id));
-        setFilteredDeliveries(filteredDeliveries.filter(delivery => delivery.id !== id));
-
-        Swal.fire(
-          '¡Borrado!',
-          'La entrega ha sido borrada.',
-          'success'
-        );
-      }
-    });
-  } else if (action === 'Entregado') {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: "El estado será cambiado a 'Entregado'.",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, cambiar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        const currentDate = new Date();
-        // Ajustar la fecha al inicio del día en UTC
-        const deliveryDate = new Date(Date.UTC(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate()));
-
+  const handleActionChange = async (id, action) => {
+    if (action === 'delete') {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esta acción.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await deleteDoc(doc(db, "deliveries", id));
+          setDeliveries(deliveries.filter(delivery => delivery.id !== id));
+          setFilteredDeliveries(filteredDeliveries.filter(delivery => delivery.id !== id));
+  
+          Swal.fire(
+            '¡Borrado!',
+            'La entrega ha sido borrada.',
+            'success'
+          );
+        }
+      });
+    } else if (action === 'Entregado') {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "El estado será cambiado a 'Entregado'.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, cambiar',
+        cancelButtonText: 'Cancelar'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          const currentDate = new Date();
+          
+          // CAMBIO: Obtener la fecha local sin considerar la hora para evitar el problema con las 18 horas.
+          // Este cambio asegura que la fecha no se pase al día siguiente después de las 18:00 horas.
+          const localDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+  
+          const deliveryDoc = doc(db, "deliveries", id);
+  
+          // Actualizar estado a "Entregado" y agregar la fecha y hora de entrega.
+          await updateDoc(deliveryDoc, { 
+            status: action, 
+            deliveryDate: localDate.toISOString().split('T')[0], // CAMBIO: Utiliza la fecha local
+            deliveryTime: currentDate.toTimeString().split(' ')[0] // Hora actual en formato HH:MM:SS
+          });
+  
+          setDeliveries(deliveries.map(delivery =>
+            delivery.id === id ? { ...delivery, status: action, deliveryDate: localDate.toISOString().split('T')[0] } : delivery
+          ));
+          setFilteredDeliveries(filteredDeliveries.map(delivery =>
+            delivery.id === id ? { ...delivery, status: action, deliveryDate: localDate.toISOString().split('T')[0] } : delivery
+          ));
+  
+          Swal.fire({
+            title: 'Estado actualizado',
+            text: `El estado ha sido cambiado a ${action}.`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+          });
+        }
+      });
+    } else {
+      try {
         const deliveryDoc = doc(db, "deliveries", id);
-
-        // Actualizar estado a "Entregado" y agregar la fecha de entrega
-        await updateDoc(deliveryDoc, { 
-          status: action, 
-          deliveryDate: deliveryDate.toISOString().split('T')[0], 
-          deliveryTime: currentDate.toTimeString().split(' ')[0] 
-        });
-        
-
+        await updateDoc(deliveryDoc, { status: action });
         setDeliveries(deliveries.map(delivery =>
-          delivery.id === id ? { ...delivery, status: action, deliveryDate: deliveryDate.toISOString().split('T')[0] } : delivery
+          delivery.id === id ? { ...delivery, status: action } : delivery
         ));
         setFilteredDeliveries(filteredDeliveries.map(delivery =>
-          delivery.id === id ? { ...delivery, status: action, deliveryDate: deliveryDate.toISOString().split('T')[0] } : delivery
+          delivery.id === id ? { ...delivery, status: action } : delivery
         ));
-
+  
         Swal.fire({
           title: 'Estado actualizado',
           text: `El estado ha sido cambiado a ${action}.`,
           icon: 'success',
           confirmButtonText: 'OK'
         });
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un error al actualizar el estado.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       }
-    });
-  } else {
-    try {
-      const deliveryDoc = doc(db, "deliveries", id);
-      await updateDoc(deliveryDoc, { status: action });
-      setDeliveries(deliveries.map(delivery =>
-        delivery.id === id ? { ...delivery, status: action } : delivery
-      ));
-      setFilteredDeliveries(filteredDeliveries.map(delivery =>
-        delivery.id === id ? { ...delivery, status: action } : delivery
-      ));
-
-      Swal.fire({
-        title: 'Estado actualizado',
-        text: `El estado ha sido cambiado a ${action}.`,
-        icon: 'success',
-        confirmButtonText: 'OK'
-      });
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Hubo un error al actualizar el estado.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
     }
-  }
-};
-
+  };
+  
 
   return (
     <div className="delivery-list-container">

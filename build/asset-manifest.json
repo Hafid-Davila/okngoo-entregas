@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.64848d6d.css",
-    "main.js": "/static/js/main.8f67dba1.js",
+    "main.js": "/static/js/main.d87a689d.js",
     "static/js/239.77adaa2d.chunk.js": "/static/js/239.77adaa2d.chunk.js",
     "static/js/213.3710bfcf.chunk.js": "/static/js/213.3710bfcf.chunk.js",
     "static/js/732.91539038.chunk.js": "/static/js/732.91539038.chunk.js",
@@ -9,7 +9,7 @@
     "static/media/Black & White City Skyscraper Desktop Wallpaper.png": "/static/media/Black & White City Skyscraper Desktop Wallpaper.fa1a5ce9502073262bc1.png",
     "index.html": "/index.html",
     "main.64848d6d.css.map": "/static/css/main.64848d6d.css.map",
-    "main.8f67dba1.js.map": "/static/js/main.8f67dba1.js.map",
+    "main.d87a689d.js.map": "/static/js/main.d87a689d.js.map",
     "239.77adaa2d.chunk.js.map": "/static/js/239.77adaa2d.chunk.js.map",
     "213.3710bfcf.chunk.js.map": "/static/js/213.3710bfcf.chunk.js.map",
     "732.91539038.chunk.js.map": "/static/js/732.91539038.chunk.js.map",
@@ -17,6 +17,6 @@
   },
   "entrypoints": [
     "static/css/main.64848d6d.css",
-    "static/js/main.8f67dba1.js"
+    "static/js/main.d87a689d.js"
   ]
 }
